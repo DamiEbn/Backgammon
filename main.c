@@ -103,7 +103,7 @@ int rolling_dices(int dice_num) {
 int char_to_int(char typed_ch_int[128]) {
     //umwandlung des strings in eine zahl
     char *endptr;
-    int int_num = strtol(typed_ch_int, &endptr, 10);
+    int const int_num = strtol(typed_ch_int, &endptr, 10);
     //wenn es sich bei der Eingabe um keine Zahl handelt
     if (endptr == typed_ch_int) {
         fprintf(stderr, "Eingabefehler: Bitte eine gültige Zahl eingeben\n");
@@ -209,8 +209,8 @@ int input_check_and_convert_moving_stone(players_t players[], int const players_
         //prüfen ob es sich um eine zahl im gültigkeitsberich handelt
         if (num < 1 || num > 24
             || check_valid_stone(players, players_index, num) == 0
-            || check_valid_moves_possible(players, players_index, num)) {
-            fprintf(stderr, "Eingabefehler\n");
+            || check_valid_moves_possible(players, players_index, num) == 0) {
+            fprintf(stderr, "Eingabefehler 1\n");
         }
         else check = 0;
     }
@@ -274,6 +274,20 @@ void you_ve_x_moves_w_value_x(players_t players[], const int which, const int mo
     printf("\n");
 }
 
+void get_stone_back_in(players_t players[], const int players_index, int *moves_counter) {
+    //index der gegner*in
+    int opponent = 0;
+    if (players_index == 0) {
+        opponent = 1;
+    }
+    int const back_in_dice = rolling_dices(0);
+    if (players[opponent].playing_board[0 + back_in_dice -1] < 1) {
+        players[players_index].thrown_out--;
+        players[players_index].playing_board[0 + back_in_dice -1]++;
+    }
+    *moves_counter++;
+}
+
 int main(){
     int thrown_out = 0;
     int rolled_out = 0;
@@ -307,6 +321,9 @@ int main(){
         //welchen stein möchtest Du bewegen?
         int moves_counter = 0;
         while (moves_counter != moves) {
+            if (players[which].thrown_out > 0) {
+                get_stone_back_in(players, which, &moves_counter);
+            }
             //umwandlung des strings in einen int
             //prüfen ob es sich um eine zahl im gültigkeitsberich handelt
             //und den führenden stein auf den index anpassen
