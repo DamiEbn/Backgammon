@@ -351,15 +351,16 @@ int main(){
                 get_stone_back_in(players, which, &moves_counter);
                 continue;
             }
+            //prüfen ob es irgendeinen gültigen zug gibt
+            if (is_there_a_valid_move(players, which) == 0) {
+                fprintf(stderr,"Kein gültiger Zug möglich\n");
+                break;
+            }
             //umwandlung des strings in einen int
             //prüfen ob es sich um eine zahl im gültigkeitsbereich handelt
             //und den führenden stein auf den index anpassen
             //prüfen ob stein auf dem gewünschten feld liegt
             int const moving_stone = input_check_and_convert_moving_stone(players, which);
-            if (is_there_a_valid_move(players, which) == 0) {
-                fprintf(stderr,"Kein gültiger Zug möglich\n");
-                break;
-            }
 
             int unused_dice = 0;
             if (moves == 2
@@ -432,14 +433,15 @@ int main(){
             which = 0;
         }
         //check
-        if (players[0].rolled_out == 15) {
-            printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
-                players[0].player_name, players[1].player_name);
-        }
-        if (players[1].rolled_out == 15) {
-            printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
-                players[1].player_name, players[0].player_name);
-        }
     }//1endwhile
+    if (players[0].rolled_out == 15) {
+        printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
+            players[0].player_name, players[1].player_name);
+    }
+    if (players[1].rolled_out == 15) {
+        printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
+            players[1].player_name, players[0].player_name);
+    }
+
     return 0;
 }
