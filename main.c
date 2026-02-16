@@ -305,6 +305,17 @@ int rolling_out_possible(players_t players[], const int index) {
     return 0;
 }
 
+int is_there_a_valid_move(players_t players[], const int players_index) {
+    for (int i = 0; i < 24; i++) {
+        if (players[players_index].playing_board[i] > 0) {
+            if (check_valid_moves_possible(players, players_index, i+1) == 1) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 int main(){
     //sonst gibt er mir die gleiche random zahl
     srand(time(NULL));
@@ -345,6 +356,10 @@ int main(){
             //und den führenden stein auf den index anpassen
             //prüfen ob stein auf dem gewünschten feld liegt
             int const moving_stone = input_check_and_convert_moving_stone(players, which);
+            if (is_there_a_valid_move(players, which) == 0) {
+                fprintf(stderr,"Kein gültiger Zug möglich\n");
+                break;
+            }
 
             int unused_dice = 0;
             if (moves == 2
@@ -417,6 +432,14 @@ int main(){
             which = 0;
         }
         //check
+        if (players[0].rolled_out == 15) {
+            printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
+                players[0].player_name, players[1].player_name);
+        }
+        if (players[1].rolled_out == 15) {
+            printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
+                players[1].player_name, players[0].player_name);
+        }
     }//1endwhile
     return 0;
 }
