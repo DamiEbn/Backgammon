@@ -13,17 +13,16 @@ typedef struct {
     int dice[2];
 }players_t;
 
-int readPlayers(players_t players[], int max_players) {
+int readPlayers(players_t players[], const int max_players) {
     int player_num = 0;
     int check = 1;
     while (player_num < max_players
-        || check == 1) {
+        && check == 1) {
         printf("%d. Spieler*in:", player_num+1);
         fflush(stdout);
         fgets(players[player_num].player_name, 128, stdin);
         players[player_num].player_name
         [strcspn(players[player_num].player_name, "\n")] = '\0';
-        player_num++;
         int new_check = 1;
         //prüfen ob namen gleich
         while (strcmp(players[0].player_name, players[1].player_name) == 0
@@ -40,6 +39,7 @@ int readPlayers(players_t players[], int max_players) {
                 strcpy(players[1].player_name, players[player_num].player_name);
             }
         }
+        player_num++;
         check = 0;
     }
     /*if (player_num != 2) {
@@ -146,8 +146,8 @@ int check_valid_moves_possible(players_t players[], const int players_index, int
         return 1;
     }
     //prüfen ob rauswürfeln möglich
-    if (players[players_index].playing_board[stone_move] + players[players_index].dice[0] > 23
-        || players[players_index].playing_board[stone_move] + players[players_index].dice[0] > 23
+    if ((players[players_index].playing_board[stone_move] + players[players_index].dice[0] > 23
+        || players[players_index].playing_board[stone_move] + players[players_index].dice[1] > 23)
         && count == 0) {
         return 1;
     }
@@ -236,8 +236,9 @@ int input_check_and_convert_used_dice_num(players_t players[], int const players
             fprintf(stderr, "Eingabefehler: 1 oder 2 eingeben\n");
         }
         //wenn kein gültiger zug kommt 0 zurück
-        if (check_valid_move(players, players_index, moving_stone, used_num) == 0) {
-            fprintf(stderr, "Eingabefehler: ungültiger Zug");
+        else if (check_valid_move(players, players_index, moving_stone+1,
+                players[players_index].dice[used_num-1]) == 0) {
+            fprintf(stderr, "Eingabefehler: ungültiger Zug\n");
         }
         else check = 0;
     }
@@ -281,9 +282,13 @@ void get_stone_back_in(players_t players[], const int players_index, int *moves_
         opponent = 1;
     }
     int const back_in_dice = rolling_dices(0);
-    if (players[opponent].playing_board[0 + back_in_dice -1] < 1) {
+    if (players[opponent].playing_board[0 + back_in_dice -1] < 2) {
         players[players_index].thrown_out--;
         players[players_index].playing_board[0 + back_in_dice -1]++;
+        if (players[opponent].playing_board[0 + back_in_dice -1] == 1) {
+            players[opponent].playing_board[0 + back_in_dice -1] = 0;
+            players[opponent].thrown_out++;
+        }
     }
     *moves_counter++;
 }
@@ -301,12 +306,10 @@ int rolling_out_possible(players_t players[], const int index) {
 }
 
 int main(){
-    int thrown_out = 0;
-    int rolled_out = 0;
     //sonst gibt er mir die gleiche random zahl
     srand(time(NULL));
-    //deklarierung der players-liste
-    players_t players[MAX_PLAYERS];
+    //intitialiserung der players-liste
+    players_t players[MAX_PLAYERS] = {0};
     //einlesen der spieler durch funktionsaufruf readPlayers
     readPlayers(players, MAX_PLAYERS);
     //initialisierung des spielfelds mit 0
@@ -335,6 +338,7 @@ int main(){
         while (moves_counter != moves) {
             if (players[which].thrown_out > 0) {
                 get_stone_back_in(players, which, &moves_counter);
+                continue;
             }
             //umwandlung des strings in einen int
             //prüfen ob es sich um eine zahl im gültigkeitsbereich handelt
@@ -351,49 +355,56 @@ int main(){
                 int const used_num = input_check_and_convert_used_dice_num(players, which, &unused_dice, moving_stone);
 
                 //prüfen ob rauswürfeln möglich
-                if (check_valid_move(players, which, moving_stone, used_num) == 2
+                if (check_valid_move(players, which, moving_stone+1, players[which].dice[used_num])
+                    == 2
                     && rolling_out_possible(players, which) == 1) {
                     //-1 stein an der gewünschten stelle
                     players[which].playing_board[moving_stone] -= 1;
                     //+1 stein in ausgerollt
                     players[which].rolled_out++;
                 }
-                //-1 stein an der gewünschten stelle
-                players[which].playing_board[moving_stone] -= 1;
-                //+1 stein an der genommenen pos + die zu fahrende nummer
-                players[which].playing_board[moving_stone + players[which].dice[used_num]] += 1;
+                else {
+                    //-1 stein an der gewünschten stelle
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein an der genommenen pos + die zu fahrende nummer
+                    players[which].playing_board[moving_stone + players[which].dice[used_num]] += 1;
+                }
             }
             //wenn schon eins gefahren und kein push
             //automatisch andere würfelzahl
             if (moves == 2
                 && moves_counter == 1) {
                 //prüfen ob rauswürfeln möglich
-                if (check_valid_move(players, which, moving_stone, players[which].dice[unused_dice]) == 2
+                if (check_valid_move(players, which, moving_stone+1, players[which].dice[unused_dice]) == 2
                     && rolling_out_possible(players, which) == 1) {
                     //-1 stein an der gewünschten stelle
                     players[which].playing_board[moving_stone] -= 1;
                     //+1 stein in ausgerollt
                     players[which].rolled_out++;
                     }
-                //-1 stein an der gewünschten stelle
-                players[which].playing_board[moving_stone] -= 1;
-                //+1 stein an der genommenen pos + die zu fahrende nummer
-                players[which].playing_board[moving_stone + players[which].dice[unused_dice]] += 1;
+                else {
+                    //-1 stein an der gewünschten stelle
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein an der genommenen pos + die zu fahrende nummer
+                    players[which].playing_board[moving_stone + players[which].dice[unused_dice]] += 1;
+                }
             }
             //bei push nur wie gewünscht ziehen, da gleiche würfelzahl
             if (moves == 4) {
                 //prüfen ob rauswürfeln möglich
-                if (check_valid_move(players, which, moving_stone, players[which].dice[0]) == 2
+                if (check_valid_move(players, which, moving_stone+1, players[which].dice[0]) == 2
                     && rolling_out_possible(players, which) == 1) {
                     //-1 stein an der gewünschten stelle
                     players[which].playing_board[moving_stone] -= 1;
                     //+1 stein in ausgerollt
                     players[which].rolled_out++;
                     }
-                players[which].playing_board[moving_stone] -= 1;
-                //+1 stein an der genommenen pos + die zu fahrende nummer
-                //push also alle dice gleich
-                players[which].playing_board[moving_stone + players[which].dice[0]] += 1;
+                else {
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein an der genommenen pos + die zu fahrende nummer
+                    //push also alle dice gleich
+                    players[which].playing_board[moving_stone + players[which].dice[0]] += 1;
+                }
             }
             moves_counter++;
         }//2endwhile
