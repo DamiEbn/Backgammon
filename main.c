@@ -434,11 +434,12 @@ int main(){
         }
         //check
     }//1endwhile
+    //wer ist die gewinner*in
     if (players[0].rolled_out == 15) {
         printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
             players[0].player_name, players[1].player_name);
     }
-    if (players[1].rolled_out == 15) {
+    else {
         printf("%s, Du hast gewonnen\n%s, Du hast verloren\n",
             players[1].player_name, players[0].player_name);
     }
