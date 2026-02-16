@@ -258,7 +258,7 @@ void how_many_moves(players_t players[], int *moves, const int num) {
 }
 
 void you_ve_x_moves_w_value_x(players_t players[], const int which, const int moves) {
-    //wieviele spielzüge und welche würfelzahl hast du?
+    //wie viele Spielzüge und welche Würfelzahl hast du?
     printf("Du hast %d Spielzuege mit den Wuerfelzahlen:", moves);
     if (moves == 2) {
         for (int t = 0; t < 2; t++) {
@@ -288,6 +288,18 @@ void get_stone_back_in(players_t players[], const int players_index, int *moves_
     *moves_counter++;
 }
 
+int rolling_out_possible(players_t players[], const int index) {
+    int count = 0;
+    for (int i = 0; i < 18; i++) {
+        count += players[index].playing_board[i];
+    }
+    if (players[index].thrown_out == 0
+        && count == 0) {
+        return 1;
+    }
+    return 0;
+}
+
 int main(){
     int thrown_out = 0;
     int rolled_out = 0;
@@ -297,8 +309,8 @@ int main(){
     players_t players[MAX_PLAYERS];
     //einlesen der spieler durch funktionsaufruf readPlayers
     readPlayers(players, MAX_PLAYERS);
-    //initalisierung des spielfelds mit 0
-    //initalisierung des spielfelds mit werten
+    //initialisierung des spielfelds mit 0
+    //initialisierung des spielfelds mit werten
     init_playing_board(players);
     //welche spieler*in ist am zug 0 oder 1 (1 oder 2)
     int which = 0;
@@ -325,9 +337,9 @@ int main(){
                 get_stone_back_in(players, which, &moves_counter);
             }
             //umwandlung des strings in einen int
-            //prüfen ob es sich um eine zahl im gültigkeitsberich handelt
+            //prüfen ob es sich um eine zahl im gültigkeitsbereich handelt
             //und den führenden stein auf den index anpassen
-            //prüfen ob stein auf dem geüwnschten feld liegt
+            //prüfen ob stein auf dem gewünschten feld liegt
             int const moving_stone = input_check_and_convert_moving_stone(players, which);
 
             int unused_dice = 0;
@@ -335,8 +347,17 @@ int main(){
                 && moves_counter == 0) {
                 //welche würfelzahl
                 //umwandlung des strings in eine zahl
-                //prüfen ob im gültigkeitsbereich und anpassen an index und anpassen des ungenutzen würfels
+                //prüfen ob im gültigkeitsbereich und anpassen an index und anpassen des ungenutzten würfels
                 int const used_num = input_check_and_convert_used_dice_num(players, which, &unused_dice, moving_stone);
+
+                //prüfen ob rauswürfeln möglich
+                if (check_valid_move(players, which, moving_stone, used_num) == 2
+                    && rolling_out_possible(players, which) == 1) {
+                    //-1 stein an der gewünschten stelle
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein in ausgerollt
+                    players[which].rolled_out++;
+                }
                 //-1 stein an der gewünschten stelle
                 players[which].playing_board[moving_stone] -= 1;
                 //+1 stein an der genommenen pos + die zu fahrende nummer
@@ -346,6 +367,14 @@ int main(){
             //automatisch andere würfelzahl
             if (moves == 2
                 && moves_counter == 1) {
+                //prüfen ob rauswürfeln möglich
+                if (check_valid_move(players, which, moving_stone, players[which].dice[unused_dice]) == 2
+                    && rolling_out_possible(players, which) == 1) {
+                    //-1 stein an der gewünschten stelle
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein in ausgerollt
+                    players[which].rolled_out++;
+                    }
                 //-1 stein an der gewünschten stelle
                 players[which].playing_board[moving_stone] -= 1;
                 //+1 stein an der genommenen pos + die zu fahrende nummer
@@ -353,6 +382,14 @@ int main(){
             }
             //bei push nur wie gewünscht ziehen, da gleiche würfelzahl
             if (moves == 4) {
+                //prüfen ob rauswürfeln möglich
+                if (check_valid_move(players, which, moving_stone, players[which].dice[0]) == 2
+                    && rolling_out_possible(players, which) == 1) {
+                    //-1 stein an der gewünschten stelle
+                    players[which].playing_board[moving_stone] -= 1;
+                    //+1 stein in ausgerollt
+                    players[which].rolled_out++;
+                    }
                 players[which].playing_board[moving_stone] -= 1;
                 //+1 stein an der genommenen pos + die zu fahrende nummer
                 //push also alle dice gleich
