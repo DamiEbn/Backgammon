@@ -12,7 +12,7 @@ A command line backgammon game, written in C, developed with CLion/CMake.
    - cd build
    - cmake ..
    - cmake --build .
-4. Run the game: ./Backgammon.exe
+4. Run the game: Backgammon.exe
 ## Known issues
 - Only tested on Windows
 - Using arrow keys during name input causes name to not be recognized correctly (e.g. "Laura" ≠ "Laura")
