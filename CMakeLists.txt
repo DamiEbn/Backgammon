@@ -3,4 +3,4 @@ project(Backgammon C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Backgammon main.c)
+add_executable(Backgammon backgammon.c)
