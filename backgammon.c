@@ -58,7 +58,7 @@ void init_playing_board(players_t players[]) {
 }
 
 void print_playing_board(players_t players[], const int which) {
-    //orint the playing field
+    //print the playing field
     printf("Dein Spielfeld, auf geht's %s, Richtung ->\n", players[which].player_name);
     for (int j = 0; j < 24; j++) {
         printf(" %d", players[which].playing_board[j]);
