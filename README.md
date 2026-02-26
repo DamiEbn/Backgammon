@@ -21,3 +21,6 @@ A command line backgammon game, written in C, developed with CLion/CMake.
 ## Not implemented
 - Doubling cube
 - Resigning a game
+- Undoing a move
+## License
+MIT
