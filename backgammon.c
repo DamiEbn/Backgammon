@@ -91,7 +91,7 @@ int rolling_dices(int dice_num) {
 }
 
 int char_to_int(char typed_ch_int[128]) {
-    //change string to digit
+    //change string to a digit
     char *endptr;
     int const int_num = strtol(typed_ch_int, &endptr, 10);
     //if input isn´t a digit
@@ -114,7 +114,7 @@ int check_valid_stone(players_t players[], const int players_index, int board_in
 
 int check_valid_moves_possible(players_t players[], const int players_index, int stone_move) {
     stone_move -= 1;
-    //enemy index
+    //opponent index
     int opponent = 0;
     if (players_index == 0) {
         opponent = 1;
@@ -123,14 +123,14 @@ int check_valid_moves_possible(players_t players[], const int players_index, int
     for (int i = 0; i < 18; i++) {
         count += players[players_index].playing_board[i];
     }
-    //checking if inside of the playing field
+    //checking if inside the playing field
     //checking if the field is free with the first dice value
     if (players[players_index].playing_board[stone_move] + players[players_index].dice[0] <= 23
         && players[opponent].playing_board[stone_move + players[players_index].dice[0]] < 2) {
         //valid move returns 1
         return 1;
     }
-    //checking if inside of the playing field
+    //checking if inside the playing field
     //checking if the field is free with the second dice value
     if (players[players_index].playing_board[stone_move] + players[players_index].dice[1] <= 23
         && players[opponent].playing_board[stone_move + players[players_index].dice[1]] < 2) {
@@ -150,8 +150,8 @@ int check_valid_moves_possible(players_t players[], const int players_index, int
 
 int check_valid_move(players_t players[], const int players_index, int stone_move, int const dice_num) {
     stone_move -= 1;
-    //checking if stone insinde the playing field
-    //checking if field is occupied by an enemy stone
+    //checking if stone inside the playing field
+    //checking if the field is occupied by an enemy stone
     if (players[players_index].playing_board[stone_move] + dice_num <= 23) {
         //enemy index
         int opponent = 0;
@@ -160,8 +160,8 @@ int check_valid_move(players_t players[], const int players_index, int stone_mov
         }
         //checking if the field where to move is occupied by an enemy stone
         if (players[opponent].playing_board[stone_move + dice_num] == 1) {
-            //dann wird am entsprechenden feld 1 stein der gegner*in abgezogen
-            //und in rausgeschmissen hinzugefügt
+            //at the relevant field -1 opponent stone
+            //opponent´s thrown out +1
             players[opponent].playing_board[stone_move + dice_num] -= 1;
             players[opponent].thrown_out += 1;
             //valid move returns 1
@@ -230,7 +230,7 @@ int input_check_and_convert_used_dice_num(players_t players[], int const players
         if (used_num < 1 || used_num > 2) {
             fprintf(stderr, "Eingabefehler: 1 oder 2 eingeben\n");
         }
-        //if no valid move we get 0 in return
+        //if no valid move, we get 0 in return
         else if (check_valid_move(players, players_index, moving_stone+1,
                 players[players_index].dice[used_num-1]) == 0) {
             fprintf(stderr, "Eingabefehler: ungültiger Zug\n");
@@ -239,7 +239,6 @@ int input_check_and_convert_used_dice_num(players_t players[], int const players
     }
     //used num corrected index
     used_num -= 1;
-    //anpassen des ungenutzten würfels
     //adjust unused dice number
     if (used_num == 0) *num2 = 1;
     return used_num;
@@ -247,7 +246,7 @@ int input_check_and_convert_used_dice_num(players_t players[], int const players
 
 
 void how_many_moves(players_t players[], int *moves, const int num) {
-    //check if push (e.g. 4 4 4 4)
+    //check if push (e.g., 4 4 4 4)
     if (players[num].dice[0] == players[num].dice[1]){
         *moves = 4;
     }
@@ -291,13 +290,13 @@ void get_stone_back_in(players_t players[], const int players_index, int *moves_
 
 int rolling_out_possible(players_t players[], const int index) {
     int count = 0;
-    //checking if there is a stone in an anti rolling out area
+    //checking if there is a stone in an anti-rolling-out area
     for (int i = 0; i < 18; i++) {
         count += players[index].playing_board[i];
     }
     if (players[index].thrown_out == 0
         && count == 0) {
-        //rolling out valid we return 1 to calling function
+        //rolling out valid, we return 1 to calling function
         return 1;
     }
     return 0;
@@ -412,13 +411,13 @@ int main(){
                     && rolling_out_possible(players, which) == 1) {
                     //-1 stone at the requested field
                     players[which].playing_board[moving_stone] -= 1;
-                    //+1 stein in ausgerollt
+                    //+1 stone in rolled out (our fundamental while condition)
                     players[which].rolled_out++;
                     }
                 else {
                     players[which].playing_board[moving_stone] -= 1;
                     //+1 stone at the (taken position + the to move number)
-                    //push therefore all the dice values are the same
+                    //push, therefore, all the dice values are the same
                     players[which].playing_board[moving_stone + players[which].dice[0]] += 1;
                 }
             }
