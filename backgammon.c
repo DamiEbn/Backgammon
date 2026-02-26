@@ -37,6 +37,7 @@ int readPlayers(players_t players[], const int max_players) {
                 strcpy(players[1].player_name, players[player_num].player_name);
             }
         }
+        player_num++;
     }
     return player_num;
 }
