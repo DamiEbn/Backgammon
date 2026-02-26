@@ -431,7 +431,6 @@ int main(){
         else {
             which = 0;
         }
-        //check
     }//1endwhile
     //who is the winner?
     if (players[0].rolled_out == 15) {
