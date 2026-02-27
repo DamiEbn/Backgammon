@@ -133,14 +133,14 @@ int check_valid_moves_possible(players_t players[], const int players_index, int
     }
     //checking if inside the playing field
     //checking if the field is free with the second dice value
-    if (players[players_index].playing_board[stone_move] + players[players_index].dice[1] <= 23
+    if (stone_move + players[players_index].dice[1] <= 23
         && players[opponent].playing_board[stone_move + players[players_index].dice[1]] < 2) {
         //valid move returns 1
         return 1;
     }
     //checking if rolling out is possible
-    if ((players[players_index].playing_board[stone_move] + players[players_index].dice[0] > 23
-        || players[players_index].playing_board[stone_move] + players[players_index].dice[1] > 23)
+    if ((stone_move + players[players_index].dice[0] > 23
+        || stone_move + players[players_index].dice[1] > 23)
         && count == 0) {
         //valid move returns 1
         return 1;
