@@ -153,7 +153,7 @@ int check_valid_move(players_t players[], const int players_index, int stone_mov
     stone_move -= 1;
     //checking if stone inside the playing field
     //checking if the field is occupied by an enemy stone
-    if (players[players_index].playing_board[stone_move] + dice_num <= 23) {
+    if (stone_move + dice_num <= 23) {
         //enemy index
         int opponent = 0;
         if (players_index == 0) {
