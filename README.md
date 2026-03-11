@@ -23,5 +23,6 @@ A command line backgammon game, written in C, developed with CLion/CMake.
 - Resigning a game
 - Undoing a move
 - Rolling out higher numbers before lower numbers
+- If a discarded stone does not return to the playing field with the first dice roll, the first dice roll is still forfeited instead of being used in a possible second move (should the second dice roll be able to bring the stone into play). In addition, if the first and second numbers are identical, no push is recognised and two moves are forfeited.
 ## License
 MIT
