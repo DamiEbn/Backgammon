@@ -127,14 +127,14 @@ int check_valid_moves_possible(players_t players[], const int players_index, int
     //checking if inside the playing field
     //checking if the field is free with the first dice value
     if (stone_move + players[players_index].dice[0] <= 23
-        && players[opponent].playing_board[stone_move + players[players_index].dice[0]] < 2) {
+        && players[opponent].playing_board[23 - (stone_move + players[players_index].dice[0])] < 2) {
         //valid move returns 1
         return 1;
     }
     //checking if inside the playing field
     //checking if the field is free with the second dice value
     if (stone_move + players[players_index].dice[1] <= 23
-        && players[opponent].playing_board[stone_move + players[players_index].dice[1]] < 2) {
+        && players[opponent].playing_board[23 - (stone_move + players[players_index].dice[1])] < 2) {
         //valid move returns 1
         return 1;
     }
@@ -160,16 +160,16 @@ int check_valid_move(players_t players[], const int players_index, int stone_mov
             opponent = 1;
         }
         //checking if the field where to move is occupied by an enemy stone
-        if (players[opponent].playing_board[stone_move + dice_num] == 1) {
+        if (players[opponent].playing_board[23 - (stone_move + dice_num)] == 1) {
             //at the relevant field -1 opponent stone
             //opponent´s thrown out +1
-            players[opponent].playing_board[stone_move + dice_num] -= 1;
+            players[opponent].playing_board[23 - (stone_move + dice_num)] -= 1;
             players[opponent].thrown_out += 1;
             //valid move returns 1
             return 1;
         }
         //if the field where to move is occupied by more than one enemy stone
-        if (players[opponent].playing_board[stone_move + dice_num] > 1) {
+        if (players[opponent].playing_board[23 - (stone_move + dice_num)] > 1) {
             //invalid move returns 0
             return 0;
         }
@@ -278,11 +278,11 @@ void get_stone_back_in(players_t players[], const int players_index, int *moves_
         opponent = 1;
     }
     int const back_in_dice = rolling_dices(0);
-    if (players[opponent].playing_board[0 + back_in_dice -1] < 2) {
+    if (players[opponent].playing_board[23 - (back_in_dice -1)] < 2) {
         players[players_index].thrown_out--;
         players[players_index].playing_board[0 + back_in_dice -1]++;
-        if (players[opponent].playing_board[0 + back_in_dice -1] == 1) {
-            players[opponent].playing_board[0 + back_in_dice -1] = 0;
+        if (players[opponent].playing_board[23 - (back_in_dice -1)] == 1) {
+            players[opponent].playing_board[23 - (back_in_dice -1)] = 0;
             players[opponent].thrown_out++;
         }
     }
@@ -295,8 +295,7 @@ int rolling_out_possible(players_t players[], const int index) {
     for (int i = 0; i < 18; i++) {
         count += players[index].playing_board[i];
     }
-    if (players[index].thrown_out == 0
-        && count == 0) {
+    if (count == 0) {
         //rolling out valid, we return 1 to calling function
         return 1;
     }
